@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator
 
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -21,10 +22,16 @@ class Author(models.Model):
         self.rating = post_ratings + comment_ratings + post_comment_ratings
         self.save()
 
+# Категория, к которой будет привязываться Новость
 class Category(models.Model):
-    category_name = models.CharField(max_length=255, unique=True)
+    # названия категорий тоже не должны повторяться
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name.title()
 
 class Post(models.Model):
+
     ARTICLE = "article"
     NEWS = "news"
 
@@ -38,7 +45,14 @@ class Post(models.Model):
     post_text = models.TextField() # текст новости
     post_rating = models.IntegerField(default=0)
     author = models.ForeignKey("Author", on_delete=models.CASCADE)  # Связь один ко многим с моделью автор
-    category = models.ManyToManyField(Category, through="PostCategory") #связь «многие ко многим» с моделью Category (с дополнительной моделью PostCategory);
+    category = models.ForeignKey(
+        to='Category',
+        on_delete=models.CASCADE,
+        related_name='news', # все продукты в категории будут доступны через поле news
+    )
+
+    def __str__(self):
+        return f'{self.post_title}: {self.post_text[:20]}'
 
     def like(self):
         self.post_rating +=1
