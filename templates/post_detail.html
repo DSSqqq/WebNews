@@ -9,5 +9,7 @@
     <p><strong>Дата публикации:</strong> {{ post.created_at|date:"d.m.Y" }}</p>
     <hr>
     <p>{{ post.post_text }}</p>
-    <a> href="{% url 'post_list' %}">← Назад ко всем статьям</a>
+    <a href="{% url 'post_edit' post.pk %}" class="btn btn-warning">Редактировать</a>
+    <a href="{% url 'post_list' %}" class="btn btn-primary">Назад ко всем статьям</a>
+    <a href="{% url 'post_delete' post.id %}" class="btn btn-danger">Удалить пост</a>
 {% endblock content %}

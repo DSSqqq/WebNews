@@ -9,35 +9,85 @@ Post
 {% block content %}
    <h1>Все новости</h1>
    <hr>
-   <h3>{{ time_now|date:'M d Y' }}</h3>
+   {# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
+<hr>
+{# Начало формы для фильтрации новостей #}
+<form action="" method="get" class="mb-4 p-3 bg-light border rounded">
+    <div class="row">
+        {# Проходим циклом по всем полям фильтра #}
+        {% for field in filterset.form %}
+        <div class="col-md-3"> {# Каждое поле занимает 3 колонки Bootstrap (чтобы они были в ряд) #}
+            <label class="form-label">{{ field.label }}</label> {# Выводим название поля (например, "Категория") #}
+            {{ field }} {# Само поле ввода, которое создаёт Django-фильтр #}
+        </div>
+        {% endfor %}
+    </div>
+    {# Кнопка отправки формы для применения фильтра #}
+    <button type="submit" class="btn btn-primary mt-3">Найти</button>
+</form>
+<hr>
    <hr>
    {% if news %}
-       <table>
-           <tr>
-               <td>Название</td>
-               <td>Описание</td>
-               <td>Категория</td>
-               <td>Рейтинг</td>
-               <td>Автор</td>
-               <td>время создания</td>
-           </tr>
+<table class="table table-bordered">  {# Добавляем стилизованную таблицу с границами (Bootstrap) #}
+    <thead class="thead-dark">  {# Делаем заголовок таблицы тёмным (Bootstrap) #}
+        <tr>
+            <th>Название</th>  {# Заголовок колонки с названием поста #}
+            <th>Описание</th>  {# Заголовок колонки с кратким описанием #}
+            <th>Категория</th>  {# Заголовок колонки с категорией поста #}
+            <th>Рейтинг</th>  {# Заголовок колонки с рейтингом #}
+            <th>Автор</th>  {# Заголовок колонки с автором поста #}
+            <th>Время создания</th>  {# Заголовок колонки с датой и временем создания #}
+        </tr>
+    </thead>
+    <tbody>  {# Тело таблицы, куда будут подставляться данные из БД #}
+        {% for post in news %}  {# Начинаем цикл, который проходит по всем новостям #}
+        <tr>  {# Каждая новость занимает одну строку в таблице #}
 
-           {% for post in news %}
-           <tr>
+            {# Делаем заголовок новости кликабельным — он ведёт на страницу поста #}
+            <td>
+                <a href="{% url 'post_detail' post.id %}" class="btn btn-primary">  {# Ссылка-кнопка с Bootstrap-стилем #}
+                    {{ post.post_title|truncatechars:15|censor }}  {# Обрезаем заголовок до 15 символов и применяем фильтр цензуры #}
+                </a>
+            </td>
 
-               <td>{{ post.post_title|truncatechars:15|censor}}</td>
-               <td>{{ post.post_text|truncatechars:20|censor}}</td>
-               <td>{{ post.category.name }}</td>
-               <td>{{ post.post_rating }}</td>
-               <td>{{ post.author.full_name }}</td>
-               <td>{{ post.created_at|date:'d.m.Y H:i' }}</td>
-           </tr>
-           {% endfor %}
+            <td>{{ post.post_text|truncatechars:20|censor }}</td>  {# Выводим текст поста, обрезанный до 20 символов #}
+            <td>{{ post.category.name }}</td>  {# Отображаем название категории новости #}
+            <td>{{ post.post_rating }}</td>  {# Показываем рейтинг поста #}
+            <td>{{ post.author.full_name }}</td>  {# Отображаем имя автора #}
+            <td>{{ post.created_at|date:'d.m.Y H:i' }}</td>  {# Показываем дату и время создания поста в формате дд.мм.гг чч:мм #}
 
-       </table>
+        </tr>  {# Конец строки таблицы для одного поста #}
+        {% endfor %}  {# Завершаем цикл по новостям #}
+    </tbody>
+</table>  {# Закрываем таблицу #}
    {% else %}
        <h2>Новостей нет!</h2>
 
    {% endif %}
+<a href="{% url 'post_create' %}" class="btn btn-success mb-3">Создать пост</a>
+<hr>
+{# Добавляем пагинацию на страницу #}
+
+   {# Информация о предыдущих страницах #}
+   {% if page_obj.has_previous %}
+       <a href="?page=1">1</a>
+       {% if page_obj.previous_page_number != 1 %}
+           ...
+           <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+       {% endif %}
+   {% endif %}
+
+   {# Информация о текущей странице #}
+   {{ page_obj.number }}
+
+   {# Информация о следующих страницах #}
+   {% if page_obj.has_next %}
+       <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+       {% if paginator.num_pages != page_obj.next_page_number %}
+           ...
+           <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+       {% endif %}
+   {% endif %}
+
 {% endblock content %}
 
