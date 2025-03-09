@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import (
     ListView,
@@ -55,8 +56,9 @@ class PostDetail(DetailView):
     # Название объекта, в котором будет выбранный пользователем пост
     context_object_name = 'post'
 
-# Добавляем новое представление для создания товаров.
-class PostCreate(CreateView):
+
+# Добавляем новое представление для создания .
+class PostCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     # Указываем нашу разработанную форму
     form_class = PostForm
     # модель товаров
@@ -64,15 +66,24 @@ class PostCreate(CreateView):
     # и новый шаблон, в котором используется форма.
     template_name = 'post_edit.html'
 
-class PostUpdate(UpdateView):
+    def test_func(self):
+        return self.request.user.groups.filter(name="authors").exists()
+
+class PostUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'post_edit.html'
 
+    def test_func(self):
+        return self.request.user.groups.filter(name="authors").exists()
+
     def get_success_url(self):
         return reverse_lazy('post_detail', kwargs={'pk': self.object.pk})
 
-class PostDelete(DeleteView):
+class PostDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     template_name = 'post_delete.html'
     success_url = reverse_lazy('post_list')
+
+    def test_func(self):
+        return self.request.user.groups.filter(name="authors").exists()

@@ -15,12 +15,19 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path,include
+from django.urls import path, include
+from django.views.generic import TemplateView
+from allauth.account.views import LoginView, LogoutView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('pages/', include('django.contrib.flatpages.urls')),
- # Делаем так, чтобы все адреса из нашего приложения (simpleapp/urls.py)
-   # подключались к главному приложению с префиксом products/.
-   path('news/', include('newsapp.urls')),
+
+    path('news/', include('newsapp.urls')),
+    path('', include('protect.urls')),
+    path('sign/', include('sign.urls')),
+    path("sign/login/", LoginView.as_view(), name="account_login"),
+    path("sign/logout/", LogoutView.as_view(), name="account_logout"),
+    path('accounts/', include('allauth.urls')),
+    path('auth/', include('social_django.urls', namespace='social')),
 ]

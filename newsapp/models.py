@@ -52,6 +52,7 @@ class Post(models.Model):
         related_name='news', # все продукты в категории будут доступны через поле news
     )
 
+
     def __str__(self):
         return f'{self.post_title}: {self.post_text[:20]}'
 

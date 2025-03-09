@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-xh8tn3widj15m+n_rf$=hbj9z=xaookchfw=_-@l2_0bvw0a-m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -44,12 +44,30 @@ INSTALLED_APPS = [
     'newsapp',
     'accounts',
     'django_filters',
+
+    'sign',
+    'protect',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+
+    'social_django',
+    'allauth.socialaccount.providers.yandex',
 ]
 
 SITE_ID = 1
 
+AUTHENTICATION_BACKENDS = [
+    'social_core.backends.yandex.YandexOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -76,6 +94,8 @@ TEMPLATES = [
         },
     },
 ]
+
+
 
 WSGI_APPLICATION = 'news.wsgi.application'
 
@@ -133,3 +153,37 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATICFILES_DIRS = [BASE_DIR/'static']
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+LOGIN_URL = '/sign/login/'
+LOGIN_REDIRECT_URL = '/news/'
+ACCOUNT_SIGNUP_REDIRECT_URL = "/sign/login/"
+LOGOUT_REDIRECT_URL = "/sign/login/"
+ACCOUNT_LOGOUT_REDIRECT_URL = "/sign/login/"
+
+ACCOUNT_FORMS = {'signup': 'sign.models.BasicSignupForm'}
+
+SOCIAL_AUTH_YANDEX_OAUTH2_KEY = 'your-client-id'
+SOCIAL_AUTH_YANDEX_OAUTH2_SECRET = 'your-client-secret'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': 'ТВОЙ_CLIENT_ID_GOOGLE',
+            'secret': 'ТВОЙ_CLIENT_SECRET_GOOGLE',
+            'key': ''
+        }
+    },
+    'yandex': {
+        'APP': {
+            'client_id': 'ТВОЙ_CLIENT_ID_YANDEX',
+            'secret': 'ТВОЙ_CLIENT_SECRET_YANDEX',
+            'key': ''
+        }
+    }
+}

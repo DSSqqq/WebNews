@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 # Импортируем созданное нами представление
 from .views import (PostList,
                     PostDetail,
