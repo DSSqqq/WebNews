@@ -1,0 +1,36 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+    Категории новостей
+{% endblock title %}
+
+{% block content %}
+    <h1>Категории новостей</h1>
+    <hr>
+
+    {% if categories %}
+        <ul>
+            {% for category in categories %}
+                <li>
+                    <strong>{{ category.name }}</strong>
+
+                    {% if user in category.subscribers.all %}
+                        <!-- Отписаться -->
+                        <form action="{% url 'unsubscribe' category.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Отписаться</button>
+                        </form>
+                    {% else %}
+                        <!-- Подписаться -->
+                        <form action="{% url 'subscribe' category.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-sm">Подписаться</button>
+                        </form>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Категорий пока нет.</p>
+    {% endif %}
+{% endblock content %}

@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.urls import reverse
+from django.core.mail import send_mail
+from django.conf import settings
 
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -25,8 +27,9 @@ class Author(models.Model):
 
 # Категория, к которой будет привязываться Новость
 class Category(models.Model):
-    # названия категорий тоже не должны повторяться
     name = models.CharField(max_length=100, unique=True)
+    # Подписчики категории (ManyToMany с User)
+    subscribers = models.ManyToManyField(User, related_name="subscribed_categories", blank=True)
 
     def __str__(self):
         return self.name.title()
@@ -52,7 +55,24 @@ class Post(models.Model):
         related_name='news', # все продукты в категории будут доступны через поле news
     )
 
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None  # Проверяем, создаётся ли пост впервые
+        super().save(*args, **kwargs)
+        if is_new:
+            self.notify_subscribers()
 
+    def notify_subscribers(self):
+        subscribers = self.category.subscribers.all()
+        emails = [user.email for user in subscribers if user.email]
+
+        if emails:
+            send_mail(
+                subject=f"Новая статья в категории {self.category.name}",
+                message=f"Прочитайте новую статью: {self.post_title}\n{self.preview()}\n\nЧитать полностью: http://127.0.0.1:8000{self.get_absolute_url()}",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=emails,
+                fail_silently=False,
+            )
     def __str__(self):
         return f'{self.post_title}: {self.post_text[:20]}'
 
@@ -89,5 +109,4 @@ class Comment(models.Model):
     def dislike(self):
         self.rating_comment -=1
         self.save()
-
 

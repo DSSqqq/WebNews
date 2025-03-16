@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
+import keyring
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -55,6 +56,9 @@ INSTALLED_APPS = [
 
     'social_django',
     'allauth.socialaccount.providers.yandex',
+
+    'django_apscheduler',
+
 ]
 
 SITE_ID = 1
@@ -171,6 +175,8 @@ ACCOUNT_FORMS = {'signup': 'sign.models.BasicSignupForm'}
 SOCIAL_AUTH_YANDEX_OAUTH2_KEY = 'your-client-id'
 SOCIAL_AUTH_YANDEX_OAUTH2_SECRET = 'your-client-secret'
 
+
+
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
@@ -187,3 +193,19 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
+
+
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = keyring.get_password("django_email", "EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = keyring.get_password("django_email", "EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# формат даты, которую будет воспринимать наш задачник (вспоминаем модуль по фильтрам)
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+
+# если задача не выполняется за 25 секунд, то она автоматически снимается, можете поставить время побольше, но как правило, это сильно бьёт по производительности сервера
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds

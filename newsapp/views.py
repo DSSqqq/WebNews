@@ -1,16 +1,31 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
+from django.shortcuts import (
+    render, get_object_or_404, redirect
+)
+
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin, UserPassesTestMixin,
+    PermissionRequiredMixin
+)
+
 from django.urls import reverse_lazy
+
 from django.views.generic import (
-    ListView,
-    DetailView,
-    CreateView,
-    UpdateView,
-    DeleteView,
+    ListView, DetailView, CreateView,
+    UpdateView, DeleteView,
 )
 
 from .filters import PostFilter
-from .forms import PostForm
-from .models import Post
+
+from .forms import (
+    PostForm
+
+)
+from .models import (
+    Post,Category,
+)
+
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 class PostList(ListView):
     model = Post
@@ -87,3 +102,23 @@ class PostDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         return self.request.user.groups.filter(name="authors").exists()
+
+
+# Отображение списка категорий
+def category_list(request):
+    categories = Category.objects.all()
+    return render(request, 'news/category_list.html', {'categories': categories})
+
+# Подписка на категорию
+@login_required
+def subscribe(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    category.subscribers.add(request.user)
+    return redirect('category_list')
+
+# Отписка от категории
+@login_required
+def unsubscribe(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    category.subscribers.remove(request.user)
+    return redirect('category_list')

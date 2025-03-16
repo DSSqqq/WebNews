@@ -68,6 +68,7 @@
                     </ul>
                     {% if user.is_authenticated %}
                         <div class="user-container">
+                            <a href="http://127.0.0.1:8000/news/categories/" class="btn btn-success">Subscriptions</a>
                             <span class="nav-username">Hello, {{ user.username }}!</span>
                             <a class="logout-btn" href="{% url 'account_logout' %}?next=/">Log out</a>
                         </div>
