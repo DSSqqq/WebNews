@@ -1,47 +1,78 @@
-from django_apscheduler.jobstores import DjangoJobStore, register_events
-from apscheduler.schedulers.background import BackgroundScheduler
+from celery import shared_task
 from django.utils.timezone import now, timedelta
-from django.core.mail import send_mail
+from django.core.mail import send_mass_mail
 from django.conf import settings
 from .models import Post, Category
-from django.contrib.auth.models import User
+from django_celery_beat.models import CrontabSchedule, PeriodicTask
+import json
+from django.core.mail import get_connection
 
-
+@shared_task
 def send_weekly_newsletter():
-    """Функция отправки писем подписчикам с новыми статьями за неделю"""
+    print("Задача send_weekly_newsletter запущена")
+    """Асинхронная рассылка подписчикам с новыми статьями за неделю через Celery"""
     one_week_ago = now() - timedelta(days=7)
 
+    messages = []
     categories = Category.objects.all()
+
     for category in categories:
-        # Получаем пользователей, подписанных на категорию
         subscribers = category.subscribers.all()
 
         if subscribers.exists():
-            # Получаем новые статьи за неделю
             new_posts = Post.objects.filter(category=category, created_at__gte=one_week_ago)
 
             if new_posts.exists():
-                # Формируем список ссылок на статьи
                 post_links = "\n".join(
-                    [f"- {post.post_title}: http://127.0.0.1:8000/news/{post.id}" for post in new_posts])
+                    [f"- {post.post_title}: https://yourdomain.com/news/{post.id}" for post in new_posts]
+                )
 
-                # Формируем текст письма
                 subject = f"Новые статьи в категории '{category.name}'"
                 message = f"Здравствуйте!\n\nВот новые статьи в категории '{category.name}' за последнюю неделю:\n\n{post_links}\n\nС уважением, команда News Portal."
 
-                # Отправляем письма подписчикам
                 for user in subscribers:
-                    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+                    messages.append((subject, message, settings.DEFAULT_FROM_EMAIL, [user.email]))
+
+    if messages:
+        connection = get_connection()
+        connection.open()
+        send_mass_mail(messages, connection=connection)
+        connection.close()
+
+def setup_periodic_tasks():
+    """Настройка периодических задач в Celery Beat (еженедельная рассылка)"""
+    schedule, created = CrontabSchedule.objects.get_or_create(
+        minute="0",
+        hour="8",
+        day_of_month="*",
+        month_of_year="*",
+        day_of_week="1",  # Понедельник
+        timezone="UTC"
+    )
+
+    PeriodicTask.objects.get_or_create(
+        crontab=schedule,
+        name="Send weekly newsletter",
+        task="newsapp.tasks.send_weekly_newsletter",
+        defaults={"args": json.dumps([]), "enabled": True}
+    )
 
 
-def start_scheduler():
-    """Настройка планировщика задач"""
-    scheduler = BackgroundScheduler()
-    scheduler.add_jobstore(DjangoJobStore(), "default")
 
-    # Запуск каждую неделю по воскресеньям в 9 утра
-    scheduler.add_job(send_weekly_newsletter, "cron", day_of_week="sun", hour=20, minute=25, id="weekly_newsletter",
-                      replace_existing=True)
 
-    register_events(scheduler)
-    scheduler.start()
+
+
+@shared_task
+def send_post_notification(post_id):
+    from .models import Post  # Импорт тут, чтобы избежать циклического импорта
+
+    post = Post.objects.get(id=post_id)
+    subscribers = post.category.subscribers.all()
+
+    if subscribers.exists():
+        subject = f"Новый пост в категории '{post.category.name}'"
+        message = f"Здравствуйте!\n\nОпубликован новый пост:\n\n- {post.post_title}: https://127.0.0.1:8000.com/news/{post.id}\n\nС уважением, команда News Portal."
+
+        messages = [(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email]) for user in subscribers]
+
+        send_mass_mail(messages)

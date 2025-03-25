@@ -52,7 +52,7 @@ class Post(models.Model):
     category = models.ForeignKey(
         to='Category',
         on_delete=models.CASCADE,
-        related_name='news', # все продукты в категории будут доступны через поле news
+        related_name='news', # все посты в категории будут доступны через поле news
     )
 
     def save(self, *args, **kwargs):
