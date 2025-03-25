@@ -58,10 +58,6 @@ def setup_periodic_tasks():
     )
 
 
-
-
-
-
 @shared_task
 def send_post_notification(post_id):
     from .models import Post  # Импорт тут, чтобы избежать циклического импорта

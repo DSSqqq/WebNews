@@ -19,7 +19,6 @@ def send_welcome_email(sender, instance, created, **kwargs):
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [instance.email])
 
 
-
 @receiver(post_save, sender=Post)
 def send_notification_on_post_save(sender, instance, created, **kwargs):
     if created:  # Если пост только что создан
