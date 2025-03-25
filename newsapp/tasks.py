@@ -24,7 +24,7 @@ def send_weekly_newsletter():
 
             if new_posts.exists():
                 post_links = "\n".join(
-                    [f"- {post.post_title}: https://yourdomain.com/news/{post.id}" for post in new_posts]
+                    [f"- {post.post_title}: https://127.0.0.1:8000.com/news/{post.id}" for post in new_posts]
                 )
 
                 subject = f"Новые статьи в категории '{category.name}'"
