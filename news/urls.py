@@ -22,8 +22,6 @@ from allauth.account.views import LoginView, LogoutView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('pages/', include('django.contrib.flatpages.urls')),
-
-
     path('news/', include('newsapp.urls')),
     path('', include('protect.urls')),
     path('sign/', include('sign.urls')),
@@ -31,5 +29,5 @@ urlpatterns = [
     path("sign/logout/", LogoutView.as_view(), name="account_logout"),
     path('accounts/', include('allauth.urls')),
     path('auth/', include('social_django.urls', namespace='social')),
-
+    path('start/', include('newsapp.urls')),
 ]

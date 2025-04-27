@@ -1,0 +1,2 @@
+2025-04-27 12:01:12,718 INFO autoreload Watching for file changes with StatReloader
+2025-04-27 12:03:12,733 INFO autoreload C:\Users\OZON\PycharmProjects\WebNews\news\news\settings.py changed, reloading.

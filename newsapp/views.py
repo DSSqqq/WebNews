@@ -27,12 +27,21 @@ from .models import (
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
+
 class PostList(ListView):
     model = Post
     ordering = '-created_at'
     template_name = 'news.html'
     context_object_name = 'news'
     paginate_by = 10 # вот так мы можем указать количество записей на странице
+
+    @method_decorator(cache_page(30 * 2, key_prefix='post_list'))  # Кэш на 1 минуту
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
 
     # Переопределяем функцию получения списка новостей
     def get_queryset(self):
@@ -50,15 +59,11 @@ class PostList(ListView):
     # Метод get_context_data позволяет нам изменить набор данных,
     # который будет передан в шаблон.
     def get_context_data(self, **kwargs):
-        # С помощью super() мы обращаемся к родительским классам
-        # и вызываем у них метод get_context_data с теми же аргументами,
-        # что и были переданы нам.
         # В ответе мы должны получить словарь.
         context = super().get_context_data(**kwargs)
         #С помощью super() мы обращаемся к родительским классам
         # и вызываем у них метод get_context_data с теми же аргументами,
         # что и были переданы нам.
-        # В ответе мы должны получить словарь.
         context['filterset'] = self.filterset
         return context
 
@@ -70,6 +75,15 @@ class PostDetail(DetailView):
     template_name = 'post_detail.html'
     # Название объекта, в котором будет выбранный пользователем пост
     context_object_name = 'post'
+
+    def get_object(self, queryset=None):
+        post_id = self.kwargs.get('pk')
+        cache_key = f'post_{post_id}'
+        post = cache.get(cache_key)
+        if not post:
+            post = super().get_object(queryset)
+            cache.set(cache_key, post, 60 * 15)  # Кэшируем на 15 минут
+        return post
 
 
 # Добавляем новое представление для создания .
@@ -84,6 +98,11 @@ class PostCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def test_func(self):
         return self.request.user.groups.filter(name="authors").exists()
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        cache.clear()  # Очищаем кэш после создания статьи
+        return response
+
 class PostUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     form_class = PostForm
@@ -95,6 +114,12 @@ class PostUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy('post_detail', kwargs={'pk': self.object.pk})
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        cache.delete('post_list')
+        cache.delete(f'post_{self.object.pk}')
+        return response
+
 class PostDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     template_name = 'post_delete.html'
@@ -102,6 +127,12 @@ class PostDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         return self.request.user.groups.filter(name="authors").exists()
+
+    def delete(self, request, *args, **kwargs):
+        post_id = self.get_object().pk
+        cache.delete('post_list')
+        cache.delete(f'post_{post_id}')
+        return super().delete(request, *args, **kwargs)
 
 
 # Отображение списка категорий
@@ -122,3 +153,18 @@ def unsubscribe(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     category.subscribers.remove(request.user)
     return redirect('category_list')
+
+
+
+import logging
+from django.http import HttpResponse
+
+# Логгер для сервера
+logger = logging.getLogger('django.server')
+
+def my_view(request):
+    logger.debug('Debugging started...')
+    logger.info('Server started...')
+    logger.warning('Warning: server started...')
+    logger.error('Error: server started...')
+    return HttpResponse('Hello, world!')

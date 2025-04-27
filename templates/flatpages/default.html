@@ -41,50 +41,62 @@
         </style>
     </head>
     <body>
-        <!-- Responsive navbar-->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
-            <div class="container">
-                <a class="navbar-brand" href="#">Django Flatpages</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse"
-                        data-target="#navbarResponsive"
-                        aria-controls="navbarResponsive" aria-expanded="false"
-                        aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarResponsive">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/about/">About</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/contacts/">Contact</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/news/">News</a>
-                        </li>
-                    </ul>
-                    {% if user.is_authenticated %}
-                        <div class="user-container">
-                            <a href="http://127.0.0.1:8000/news/categories/" class="btn btn-success">Subscriptions</a>
-                            <span class="nav-username">Hello, {{ user.username }}!</span>
-                            <a class="logout-btn" href="{% url 'account_logout' %}?next=/">Log out</a>
-                        </div>
-                    {% else %}
-                        <ul class="navbar-nav ml-auto">
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'login' %}">Log In</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
-                            </li>
-                        </ul>
-                    {% endif %}
+
+{% load cache %}
+
+<!-- Responsive navbar-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <div class="container">
+        <a class="navbar-brand" href="#">Django Flatpages</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                data-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+
+            {% cache 600 navbar_menu %}
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/about/">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/contacts/">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/news/">News</a>
+                </li>
+            </ul>
+            {% endcache %}
+
+            {% if user.is_authenticated %}
+                {% cache 300 user_nav user.id %}
+                <div class="user-container">
+                    <a href="http://127.0.0.1:8000/news/categories/" class="btn btn-success">Subscriptions</a>
+                    <span class="nav-username">Hello, {{ user.username }}!</span>
+                    <a class="logout-btn" href="{% url 'account_logout' %}?next=/">Log out</a>
                 </div>
-            </div>
-        </nav>
+                {% endcache %}
+            {% else %}
+                {% cache 600 guest_nav %}
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+                    </li>
+                </ul>
+                {% endcache %}
+            {% endif %}
+
+        </div>
+    </div>
+</nav>
         <!-- Page content-->
         <div class="container">
             <div class="row">

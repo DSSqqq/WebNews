@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 import keyring
 from pathlib import Path
+from django.conf import settings
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -80,7 +82,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware'
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+
 ]
 
 ROOT_URLCONF = 'news.urls'
@@ -164,6 +167,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 LOGIN_URL = '/sign/login/'
@@ -214,11 +218,133 @@ APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 
 # Настройка celery и redis
 
-
-
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
+# КЭШ
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache_files'),  # Папка для хранения кэша
+        'TIMEOUT': None,  # Можно задать общий таймаут, но мы укажем его в декораторах
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000,  # Ограничение на количество записей в кэше
+        },
+    }
+}
+
+
+
+import logging
+from django.utils.log import CallbackFilter
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,  # Не убиваем стандартные логгеры Django
+    'filters': {
+        # Фильтр для отладки: сообщения только если DEBUG=True
+        'debug_filter': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda record: settings.DEBUG,
+        },
+        # Фильтр для продакшена: сообщения только если DEBUG=False
+        'production_filter': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda record: not settings.DEBUG,
+        },
+    },
+    'formatters': {
+        # Форматтер для general.log и security.log (обычный детальный вывод)
+        'detailed': {
+            'format': '{asctime} {levelname} {module} {message}',
+            'style': '{',
+        },
+        # Форматтер для ошибок (errors.log) - путь и стек ошибки
+        'error': {
+            'format': '{asctime} {levelname} {message} {pathname} {exc_info}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        # Консольный вывод через кастомный хендлер
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['debug_filter'],  # Только если DEBUG=True
+            'class': 'news.logging_handlers.LevelBasedStreamHandler',  # Путь к кастомному хендлеру
+        },
+        # Файл для общих логов
+        'general_file': {
+            'level': 'INFO',
+            'filters': ['production_filter'],  # Только если DEBUG=False
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'general.log'),
+            'formatter': 'detailed',
+        },
+        # Файл только для ошибок
+        'errors_file': {
+            'level': 'ERROR',
+            'filters': ['production_filter'],
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'errors.log'),
+            'formatter': 'error',
+        },
+        # Файл только для безопасности
+        'security_file': {
+            'level': 'DEBUG',
+            'filters': ['production_filter'],
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'security.log'),
+            'formatter': 'detailed',
+        },
+        # Отправка ошибок на почту
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['production_filter'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'error',  # Без exc_info в письме (см. ТЗ)
+        },
+    },
+    'loggers': {
+        # Главный логгер Django
+        'django': {
+            'handlers': ['console', 'general_file', 'errors_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        # Ошибки запросов
+        'django.request': {
+            'handlers': ['mail_admins', 'errors_file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        # Ошибки самого сервера (runserver и т.д.)
+        'django.server': {
+            'handlers': ['mail_admins', 'errors_file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        # Ошибки в шаблонах
+        'django.template': {
+            'handlers': ['errors_file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        # Ошибки в работе базы данных
+        'django.db.backends': {
+            'handlers': ['errors_file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        # Безопасность: только в отдельный security.log
+        'django.security': {
+            'handlers': ['security_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}

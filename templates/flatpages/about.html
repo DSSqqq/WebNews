@@ -1,6 +1,10 @@
 {%extends 'flatpages/default.html'%}
 
-{%block content%}
-<hr>
-{{flatpage.content}}
-{%endblock content%}
+{% load cache %}
+
+{% block content %}
+    {% cache 300 flatpage_content flatpage.id %}
+        <hr>
+        {{ flatpage.content }}
+    {% endcache %}
+{% endblock content %}
