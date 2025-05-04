@@ -1,2 +1,63 @@
 2025-04-27 12:01:12,718 INFO autoreload Watching for file changes with StatReloader
 2025-04-27 12:03:12,733 INFO autoreload C:\Users\OZON\PycharmProjects\WebNews\news\news\settings.py changed, reloading.
+2025-05-04 13:15:08,453 | INFO | autoreload | Watching for file changes with StatReloader
+2025-05-04 13:15:15,890 | INFO | autoreload | C:\Users\OZON\PycharmProjects\WebNews\news\news\settings.py changed, reloading.
+2025-05-04 13:15:20,211 | INFO | autoreload | Watching for file changes with StatReloader
+2025-05-04 13:15:33,591 | INFO | autoreload | C:\Users\OZON\PycharmProjects\WebNews\news\news\settings.py changed, reloading.
+2025-05-04 13:15:37,877 | INFO | autoreload | Watching for file changes with StatReloader
+2025-05-04 13:17:37,248 | INFO | views | INFO: Пользователь зашёл на test_log_view
+2025-05-04 13:17:37,249 | WARNING | views | WARNING: Это предупреждение!
+2025-05-04 13:17:37,250 | ERROR | views | ERROR: Что-то пошло не так!
+2025-05-04 13:17:37,251 | CRITICAL | views | CRITICAL: Всё пропало, шеф!
+2025-05-04 13:18:37,382 | INFO | autoreload | C:\Users\OZON\PycharmProjects\WebNews\news\news\settings.py changed, reloading.
+2025-05-04 13:18:42,652 | INFO | autoreload | Watching for file changes with StatReloader
+2025-05-04 13:18:43,577 | INFO | views | INFO: Пользователь зашёл на test_log_view
+2025-05-04 13:18:43,578 | WARNING | views | WARNING: Это предупреждение!
+2025-05-04 13:18:43,578 | ERROR | views | ERROR: Что-то пошло не так!
+2025-05-04 13:18:43,579 | CRITICAL | views | CRITICAL: Всё пропало, шеф!
+2025-05-04 13:19:54,944 | INFO | views | INFO: Пользователь зашёл на test_log_view
+2025-05-04 13:19:54,946 | WARNING | views | WARNING: Это предупреждение!
+2025-05-04 13:19:54,947 | ERROR | views | ERROR: Что-то пошло не так!
+2025-05-04 13:19:54,947 | CRITICAL | views | CRITICAL: Всё пропало, шеф!
+2025-05-04 13:19:56,462 | INFO | views | INFO: Пользователь зашёл на test_log_view
+2025-05-04 13:19:56,462 | WARNING | views | WARNING: Это предупреждение!
+2025-05-04 13:19:56,462 | ERROR | views | ERROR: Что-то пошло не так!
+2025-05-04 13:19:56,462 | CRITICAL | views | CRITICAL: Всё пропало, шеф!
+2025-05-04 13:22:11,607 | INFO | autoreload | C:\Users\OZON\PycharmProjects\WebNews\news\news\settings.py changed, reloading.
+2025-05-04 13:22:22,235 | INFO | autoreload | Watching for file changes with StatReloader
+2025-05-04 13:22:26,144 | INFO | views | INFO: Пользователь зашёл на test_log_view
+2025-05-04 13:22:26,145 | WARNING | views | WARNING: Это предупреждение!
+2025-05-04 13:22:26,145 | ERROR | views | ERROR: Что-то пошло не так!
+2025-05-04 13:22:26,146 | CRITICAL | views | CRITICAL: Всё пропало, шеф!
+2025-05-04 13:23:35,378 | INFO | autoreload | C:\Users\OZON\PycharmProjects\WebNews\news\news\settings.py changed, reloading.
+2025-05-04 13:23:41,000 | INFO | autoreload | Watching for file changes with StatReloader
+2025-05-04 13:23:41,752 | INFO | views | INFO: Пользователь зашёл на test_log_view
+2025-05-04 13:23:41,753 | WARNING | views | WARNING: Это предупреждение!
+2025-05-04 13:23:41,753 | ERROR | views | ERROR: Что-то пошло не так!
+2025-05-04 13:23:41,754 | CRITICAL | views | CRITICAL: Всё пропало, шеф!
+2025-05-04 13:25:08,654 | INFO | autoreload | C:\Users\OZON\PycharmProjects\WebNews\news\news\settings.py changed, reloading.
+2025-05-04 13:29:59,243 | INFO | autoreload | Watching for file changes with StatReloader
+2025-05-04 13:30:00,022 | INFO | views | INFO: Пользователь зашёл на test_log_view
+2025-05-04 13:30:00,023 | WARNING | views | WARNING: Это предупреждение!
+2025-05-04 13:30:00,024 | ERROR | views | ERROR: Что-то пошло не так!
+2025-05-04 13:30:00,025 | CRITICAL | views | CRITICAL: Всё пропало, шеф!
+2025-05-04 13:31:57,734 | ERROR | <console> | Тестовая ошибка для отправки почты.
+2025-05-04 13:38:54,780 | INFO | autoreload | C:\Users\OZON\PycharmProjects\WebNews\news\news\settings.py changed, reloading.
+2025-05-04 13:39:01,578 | INFO | autoreload | Watching for file changes with StatReloader
+2025-05-04 13:39:23,386 | ERROR | <console> | Тестовая ошибка для отправки почты.
+2025-05-04 13:40:27,678 | INFO | views | INFO: Пользователь зашёл на test_log_view
+2025-05-04 13:40:27,678 | WARNING | views | WARNING: Это предупреждение!
+2025-05-04 13:40:27,679 | ERROR | views | ERROR: Что-то пошло не так!
+2025-05-04 13:40:29,723 | CRITICAL | views | CRITICAL: Всё пропало, шеф!
+2025-05-04 13:42:10,802 | CRITICAL | <console> | Критическая ошибка для отправки почты.
+2025-05-04 13:44:08,214 | INFO | autoreload | C:\Users\OZON\PycharmProjects\WebNews\news\news\settings.py changed, reloading.
+2025-05-04 13:44:15,332 | INFO | autoreload | Watching for file changes with StatReloader
+2025-05-04 13:45:33,861 | ERROR | <console> | Тестовая ошибка для отправки почты.
+2025-05-04 13:46:30,451 | ERROR | <console> | Тестовая ошибка для отправки почты.
+2025-05-04 13:57:41,341 | INFO | autoreload | C:\Users\OZON\PycharmProjects\WebNews\news\news\settings.py changed, reloading.
+2025-05-04 13:57:47,708 | INFO | autoreload | Watching for file changes with StatReloader
+2025-05-04 13:57:59,931 | INFO | views | INFO: Пользователь зашёл на test_log_view
+2025-05-04 13:57:59,932 | WARNING | views | WARNING: Это предупреждение!
+2025-05-04 13:57:59,932 | ERROR | views | ERROR: Что-то пошло не так!
+2025-05-04 13:58:03,786 | CRITICAL | views | CRITICAL: Всё пропало, шеф!
+2025-05-04 13:58:56,847 | INFO | autoreload | C:\Users\OZON\PycharmProjects\WebNews\news\news\settings.py changed, reloading.

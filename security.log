@@ -1,0 +1,35 @@
+[SECURITY] 2025-05-04 13:17:37,249 | WARNING | views | WARNING: Это предупреждение!
+[SECURITY] 2025-05-04 13:17:37,250 | ERROR | views | ERROR: Что-то пошло не так!
+[SECURITY] 2025-05-04 13:17:37,251 | CRITICAL | views | CRITICAL: Всё пропало, шеф!
+[SECURITY] 2025-05-04 13:18:43,578 | WARNING | views | WARNING: Это предупреждение!
+[SECURITY] 2025-05-04 13:18:43,578 | ERROR | views | ERROR: Что-то пошло не так!
+[SECURITY] 2025-05-04 13:18:43,579 | CRITICAL | views | CRITICAL: Всё пропало, шеф!
+[SECURITY] 2025-05-04 13:19:54,946 | WARNING | views | WARNING: Это предупреждение!
+[SECURITY] 2025-05-04 13:19:54,947 | ERROR | views | ERROR: Что-то пошло не так!
+[SECURITY] 2025-05-04 13:19:54,947 | CRITICAL | views | CRITICAL: Всё пропало, шеф!
+[SECURITY] 2025-05-04 13:19:56,462 | WARNING | views | WARNING: Это предупреждение!
+[SECURITY] 2025-05-04 13:19:56,462 | ERROR | views | ERROR: Что-то пошло не так!
+[SECURITY] 2025-05-04 13:19:56,462 | CRITICAL | views | CRITICAL: Всё пропало, шеф!
+[SECURITY] 2025-05-04 13:22:26,145 | WARNING | views | WARNING: Это предупреждение!
+[SECURITY] 2025-05-04 13:22:26,145 | ERROR | views | ERROR: Что-то пошло не так!
+[SECURITY] 2025-05-04 13:22:26,146 | CRITICAL | views | CRITICAL: Всё пропало, шеф!
+[SECURITY] 2025-05-04 13:23:41,753 | WARNING | views | WARNING: Это предупреждение!
+[SECURITY] 2025-05-04 13:23:41,753 | ERROR | views | ERROR: Что-то пошло не так!
+[SECURITY] 2025-05-04 13:23:41,754 | CRITICAL | views | CRITICAL: Всё пропало, шеф!
+[SECURITY] 2025-05-04 13:25:31,761 | WARNING | views | WARNING: Это предупреждение!
+[SECURITY] 2025-05-04 13:25:31,762 | ERROR | views | ERROR: Что-то пошло не так!
+[SECURITY] 2025-05-04 13:25:31,763 | CRITICAL | views | CRITICAL: Всё пропало, шеф!
+[SECURITY] 2025-05-04 13:30:00,023 | WARNING | views | WARNING: Это предупреждение!
+[SECURITY] 2025-05-04 13:30:00,024 | ERROR | views | ERROR: Что-то пошло не так!
+[SECURITY] 2025-05-04 13:30:00,025 | CRITICAL | views | CRITICAL: Всё пропало, шеф!
+[SECURITY] 2025-05-04 13:31:57,734 | ERROR | <console> | Тестовая ошибка для отправки почты.
+[SECURITY] 2025-05-04 13:39:23,386 | ERROR | <console> | Тестовая ошибка для отправки почты.
+[SECURITY] 2025-05-04 13:40:27,678 | WARNING | views | WARNING: Это предупреждение!
+[SECURITY] 2025-05-04 13:40:27,679 | ERROR | views | ERROR: Что-то пошло не так!
+[SECURITY] 2025-05-04 13:40:29,723 | CRITICAL | views | CRITICAL: Всё пропало, шеф!
+[SECURITY] 2025-05-04 13:42:10,802 | CRITICAL | <console> | Критическая ошибка для отправки почты.
+[SECURITY] 2025-05-04 13:45:33,861 | ERROR | <console> | Тестовая ошибка для отправки почты.
+[SECURITY] 2025-05-04 13:46:30,451 | ERROR | <console> | Тестовая ошибка для отправки почты.
+[SECURITY] 2025-05-04 13:57:59,932 | WARNING | views | WARNING: Это предупреждение!
+[SECURITY] 2025-05-04 13:57:59,932 | ERROR | views | ERROR: Что-то пошло не так!
+[SECURITY] 2025-05-04 13:58:03,786 | CRITICAL | views | CRITICAL: Всё пропало, шеф!

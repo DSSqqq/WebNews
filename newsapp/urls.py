@@ -1,14 +1,8 @@
 from django.urls import path, include
 from django.views.decorators.cache import cache_page
 # Импортируем созданное нами представление
-from .views import (PostList,
-                    PostDetail,
-                    PostCreate,
-                    PostUpdate,
-                    PostDelete,
-                    category_list, subscribe, unsubscribe
-                    )
-
+from .views import (PostList, PostDetail, PostCreate, PostUpdate, PostDelete, category_list, subscribe, unsubscribe,
+                    test_log_view)
 
 
 urlpatterns = [
@@ -27,7 +21,5 @@ urlpatterns = [
    path('categories/', category_list, name='category_list'),
    path('subscribe/<int:category_id>/', subscribe, name='subscribe'),
    path('unsubscribe/<int:category_id>/', unsubscribe, name='unsubscribe'),
-
-
-
+   path('test-log/', test_log_view),
 ]

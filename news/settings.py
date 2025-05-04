@@ -13,6 +13,8 @@ import os
 import keyring
 from pathlib import Path
 from django.conf import settings
+import logging
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -213,7 +215,8 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # формат даты, которую будет воспринимать наш задачник (вспоминаем модуль по фильтрам)
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 
-# если задача не выполняется за 25 секунд, то она автоматически снимается, можете поставить время побольше, но как правило, это сильно бьёт по производительности сервера
+# если задача не выполняется за 25 секунд, то она автоматически снимается, можете поставить время побольше, но как
+# правило, это сильно бьёт по производительности сервера
 APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 
 # Настройка celery и redis
@@ -239,112 +242,198 @@ CACHES = {
 
 
 
-import logging
-from django.utils.log import CallbackFilter
-
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,  # Не убиваем стандартные логгеры Django
-    'filters': {
-        # Фильтр для отладки: сообщения только если DEBUG=True
-        'debug_filter': {
-            '()': 'django.utils.log.CallbackFilter',
-            'callback': lambda record: settings.DEBUG,
+
+# Форматы отоброжения логов
+    'formatters': {
+
+# форматер для файла general.log
+        'file_info_format': {
+            'format': '{asctime} | {levelname} | {module} | {message}',
+            'style': '{',
         },
-        # Фильтр для продакшена: сообщения только если DEBUG=False
+# errors.log
+        'file_errors_format': {
+            'format': '{asctime} | {levelname} | {message} | {pathname} | {exc_info}',
+            'style': '{',
+},
+# security.log
+        'file_security_format': {
+            'format': '[SECURITY] {asctime} | {levelname} | {module} | {message}',
+            'style': '{',
+        },
+# формат для почты (без стэка ошибок)
+        'email_format': {
+            'format': '{asctime} | {levelname} | {message} | {pathname}',
+            'style': '{',
+        },
+# Консольные
+        'debug_format': {
+            'format': '[DEBUG] {asctime} | {levelname} | {message}',
+            'style': '{',
+        },
+        'info_format': {
+            'format': '[INFO] {asctime} | {levelname} | {module} | {message}',
+            'style': '{',
+        },
+        'warning_format': {
+            'format': '[WARNING] {asctime} | {levelname} | {message} | {pathname}',
+            'style': '{',
+        },
+        'error_format': {
+            'format': '[ERROR] {asctime} | {levelname} | {message} | {pathname} | {exc_info}',
+            'style': '{',
+        },
+        'critical_format': {
+            'format': '[CRITICAL] {asctime} | {levelname} | {message} | {pathname} | {exc_info}',
+            'style': '{',
+        },
+    },
+
+# Фильтры
+    'filters': {
+
+        'debug_filter': {
+
+            '()': 'django.utils.log.CallbackFilter',  # Используем CallbackFilter
+            'callback': lambda record: settings.DEBUG,  # Если DEBUG = True, пропускаем
+        },
         'production_filter': {
             '()': 'django.utils.log.CallbackFilter',
-            'callback': lambda record: not settings.DEBUG,
+            'callback': lambda record: not settings.DEBUG,  # Если DEBUG = False, пропускаем
+        },
+
+        'only_debug': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda r: r.levelno == logging.DEBUG,
+        },
+        'only_info': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda r: r.levelno == logging.INFO,
+        },
+        'only_warning': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda r: r.levelno == logging.WARNING,
+        },
+        'only_error': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda r: r.levelno == logging.ERROR,
+        },
+        'only_critical': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda r: r.levelno == logging.CRITICAL,
         },
     },
-    'formatters': {
-        # Форматтер для general.log и security.log (обычный детальный вывод)
-        'detailed': {
-            'format': '{asctime} {levelname} {module} {message}',
-            'style': '{',
-        },
-        # Форматтер для ошибок (errors.log) - путь и стек ошибки
-        'error': {
-            'format': '{asctime} {levelname} {message} {pathname} {exc_info}',
-            'style': '{',
-        },
-    },
+
+# Обработчики для каждого уровня
+
+# В general.log
     'handlers': {
-        # Консольный вывод через кастомный хендлер
-        'console': {
-            'level': 'DEBUG',
-            'filters': ['debug_filter'],  # Только если DEBUG=True
-            'class': 'news.logging_handlers.LevelBasedStreamHandler',  # Путь к кастомному хендлеру
-        },
-        # Файл для общих логов
-        'general_file': {
+        'file_info_handler': {
             'level': 'INFO',
-            'filters': ['production_filter'],  # Только если DEBUG=False
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'general.log'),
-            'formatter': 'detailed',
+            'filename': 'general.log',
+            'formatter': 'file_info_format',
+            'filters': ['production_filter'],  # Только при DEBUG = False
         },
-        # Файл только для ошибок
-        'errors_file': {
+# В errors.log
+        'file_error_handler': {
             'level': 'ERROR',
-            'filters': ['production_filter'],
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'errors.log'),
-            'formatter': 'error',
+            'filename': 'errors.log',
+            'formatter': 'file_errors_format',
         },
-        # Файл только для безопасности
-        'security_file': {
+# В security.log
+        'file_security_handler': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': 'security.log',
+            'formatter': 'file_security_format',
+        },
+# на мыло
+        'mail_error_handler':{
+            'level': 'ERROR',
+            'class': 'logging.handlers.SMTPHandler',
+            'mailhost': ('smtp.gmail.com', 587),  # SMTP-сервер Gmail
+            'fromaddr': EMAIL_HOST_USER,  # Адрес отправителя (уже установлен в DEFAULT_FROM_EMAIL)
+            'toaddrs': ['danilka780@gmail.com'],  # Адреса получателей
+            'subject': 'Django Error Log',  # Тема письма
+            'formatter': 'email_format',  # Формат письма
+            'credentials': (EMAIL_HOST_USER, EMAIL_HOST_PASSWORD),  # Учетные данные для авторизации
+            'filters': ['production_filter'],  # Только при DEBUG = False
+            'secure': ()
+        },
+
+# В консоль
+        'debug_console': {
             'level': 'DEBUG',
-            'filters': ['production_filter'],
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'security.log'),
-            'formatter': 'detailed',
+            'class': 'logging.StreamHandler',
+            'formatter': 'debug_format',
+            'filters': ['debug_filter', 'only_debug'],  # Фильтруем только для DEBUG = True
         },
-        # Отправка ошибок на почту
-        'mail_admins': {
+        'info_console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'info_format',
+            'filters': ['debug_filter', 'only_info'],  # Фильтруем только для DEBUG = True
+        },
+        'warning_console': {
+            'level': 'WARNING',
+            'class': 'logging.StreamHandler',
+            'formatter': 'warning_format',
+            'filters': ['debug_filter', 'only_warning'],  # Фильтруем только для DEBUG = True
+        },
+        'error_console': {
             'level': 'ERROR',
-            'filters': ['production_filter'],
-            'class': 'django.utils.log.AdminEmailHandler',
-            'formatter': 'error',  # Без exc_info в письме (см. ТЗ)
+            'class': 'logging.StreamHandler',
+            'formatter': 'error_format',
+            'filters': ['debug_filter', 'only_error'],  # Фильтруем только для DEBUG = True
+        },
+        'critical_console': {
+            'level': 'CRITICAL',
+            'class': 'logging.StreamHandler',
+            'formatter': 'critical_format',
+            'filters': ['debug_filter', 'only_critical'],  # Фильтруем только для DEBUG = True
         },
     },
+
+
+
+# Логгеры для Django
     'loggers': {
-        # Главный логгер Django
         'django': {
-            'handlers': ['console', 'general_file', 'errors_file'],
-            'level': 'DEBUG',
-            'propagate': True,
+            'handlers': ['debug_console', 'info_console', 'warning_console', 'error_console', 'critical_console',
+                         'file_info_handler', 'file_error_handler', 'file_security_handler', 'mail_error_handler',],
+            'level': 'DEBUG',  # Логируем от DEBUG и выше
+            'propagate': False,  # Чтобы не дублировать сообщения
         },
-        # Ошибки запросов
         'django.request': {
-            'handlers': ['mail_admins', 'errors_file'],
+            'handlers': ['file_error_handler', 'mail_error_handler'],
             'level': 'ERROR',
             'propagate': False,
         },
-        # Ошибки самого сервера (runserver и т.д.)
         'django.server': {
-            'handlers': ['mail_admins', 'errors_file'],
+            'handlers': ['file_error_handler', 'mail_error_handler'],
             'level': 'ERROR',
             'propagate': False,
         },
-        # Ошибки в шаблонах
         'django.template': {
-            'handlers': ['errors_file'],
+            'handlers': ['file_error_handler'],
             'level': 'ERROR',
             'propagate': False,
         },
-        # Ошибки в работе базы данных
         'django.db.backends': {
-            'handlers': ['errors_file'],
+            'handlers': ['file_error_handler'],
             'level': 'ERROR',
             'propagate': False,
         },
-        # Безопасность: только в отдельный security.log
         'django.security': {
-            'handlers': ['security_file'],
-            'level': 'DEBUG',
+            'handlers': ['file_security_handler'],
+            'level': 'WARNING',
             'propagate': False,
         },
-    },
+    }
 }
+

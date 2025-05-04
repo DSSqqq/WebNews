@@ -1,0 +1,25 @@
+2025-05-04 13:17:37,250 | ERROR | ERROR: Что-то пошло не так! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None
+2025-05-04 13:17:37,251 | CRITICAL | CRITICAL: Всё пропало, шеф! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None
+2025-05-04 13:18:43,578 | ERROR | ERROR: Что-то пошло не так! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None
+2025-05-04 13:18:43,579 | CRITICAL | CRITICAL: Всё пропало, шеф! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None
+2025-05-04 13:19:54,947 | ERROR | ERROR: Что-то пошло не так! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None
+2025-05-04 13:19:54,947 | CRITICAL | CRITICAL: Всё пропало, шеф! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None
+2025-05-04 13:19:56,462 | ERROR | ERROR: Что-то пошло не так! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None
+2025-05-04 13:19:56,462 | CRITICAL | CRITICAL: Всё пропало, шеф! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None
+2025-05-04 13:22:26,145 | ERROR | ERROR: Что-то пошло не так! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None
+2025-05-04 13:22:26,146 | CRITICAL | CRITICAL: Всё пропало, шеф! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None
+2025-05-04 13:23:41,753 | ERROR | ERROR: Что-то пошло не так! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None
+2025-05-04 13:23:41,754 | CRITICAL | CRITICAL: Всё пропало, шеф! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None
+2025-05-04 13:25:31,762 | ERROR | ERROR: Что-то пошло не так! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None
+2025-05-04 13:25:31,763 | CRITICAL | CRITICAL: Всё пропало, шеф! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None
+2025-05-04 13:30:00,024 | ERROR | ERROR: Что-то пошло не так! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None
+2025-05-04 13:30:00,025 | CRITICAL | CRITICAL: Всё пропало, шеф! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None
+2025-05-04 13:31:57,734 | ERROR | Тестовая ошибка для отправки почты. | <console> | None
+2025-05-04 13:39:23,386 | ERROR | Тестовая ошибка для отправки почты. | <console> | None
+2025-05-04 13:40:27,679 | ERROR | ERROR: Что-то пошло не так! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None
+2025-05-04 13:40:29,723 | CRITICAL | CRITICAL: Всё пропало, шеф! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None
+2025-05-04 13:42:10,802 | CRITICAL | Критическая ошибка для отправки почты. | <console> | None
+2025-05-04 13:45:33,861 | ERROR | Тестовая ошибка для отправки почты. | <console> | None
+2025-05-04 13:46:30,451 | ERROR | Тестовая ошибка для отправки почты. | <console> | None
+2025-05-04 13:57:59,932 | ERROR | ERROR: Что-то пошло не так! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None
+2025-05-04 13:58:03,786 | CRITICAL | CRITICAL: Всё пропало, шеф! | C:\Users\OZON\PycharmProjects\WebNews\news\newsapp\views.py | None

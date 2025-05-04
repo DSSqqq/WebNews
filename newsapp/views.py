@@ -1,3 +1,5 @@
+
+
 from django.shortcuts import (
     render, get_object_or_404, redirect
 )
@@ -31,6 +33,22 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 
+import logging
+
+
+logger = logging.getLogger('django')
+
+from django.http import HttpResponse
+
+def test_log_view(request):
+    logger.debug('DEBUG: Это тестовое сообщение')
+    logger.info('INFO: Пользователь зашёл на test_log_view')
+    logger.warning('WARNING: Это предупреждение!')
+    logger.error('ERROR: Что-то пошло не так!')
+    logger.critical('CRITICAL: Всё пропало, шеф!')
+
+    return HttpResponse("Глянь в консоль, там логи должны быть")
+
 class PostList(ListView):
     model = Post
     ordering = '-created_at'
@@ -40,6 +58,7 @@ class PostList(ListView):
 
     @method_decorator(cache_page(30 * 2, key_prefix='post_list'))  # Кэш на 1 минуту
     def dispatch(self, *args, **kwargs):
+        logger.info("Запрос к списку новостей")
         return super().dispatch(*args, **kwargs)
 
 
@@ -100,6 +119,7 @@ class PostCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
+        logger.info("Пользователь %s создал новый пост: %s", self.request.user.username, self.object.title)
         cache.clear()  # Очищаем кэш после создания статьи
         return response
 
@@ -130,6 +150,7 @@ class PostDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def delete(self, request, *args, **kwargs):
         post_id = self.get_object().pk
+        logger.info("Пользователь %s удалил пост: %s", request.user.username, post_id)
         cache.delete('post_list')
         cache.delete(f'post_{post_id}')
         return super().delete(request, *args, **kwargs)
@@ -145,6 +166,7 @@ def category_list(request):
 def subscribe(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     category.subscribers.add(request.user)
+    logger.info("Пользователь %s подписался на категорию %s", request.user.username, category.name)
     return redirect('category_list')
 
 # Отписка от категории
@@ -152,19 +174,7 @@ def subscribe(request, category_id):
 def unsubscribe(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     category.subscribers.remove(request.user)
+    logger.info("Пользователь %s отписался от категории %s", request.user.username, category.name)
     return redirect('category_list')
 
 
-
-import logging
-from django.http import HttpResponse
-
-# Логгер для сервера
-logger = logging.getLogger('django.server')
-
-def my_view(request):
-    logger.debug('Debugging started...')
-    logger.info('Server started...')
-    logger.warning('Warning: server started...')
-    logger.error('Error: server started...')
-    return HttpResponse('Hello, world!')

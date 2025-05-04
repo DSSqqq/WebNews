@@ -1,24 +1,23 @@
 import logging
 
-class LevelBasedFormatter(logging.Formatter):
-    """Форматирует вывод в консоль по уровню логирования."""
-
-    def format(self, record):
-        # Если Warning или выше — добавляем путь файла
-        if record.levelno >= logging.WARNING:
-            self._style._fmt = '{asctime} {levelname} {message} {pathname}'
+class LevelBasedFormatterHandler(logging.StreamHandler):
+    def emit(self, record):
+        if record.levelno >= logging.CRITICAL:
+            fmt = '[CRITICAL] {asctime} | {levelname} | {message} | {pathname} | {exc_text}'
+        elif record.levelno >= logging.ERROR:
+            fmt = '[ERROR] {asctime} | {levelname} | {message} | {pathname} | {exc_text}'
+        elif record.levelno >= logging.WARNING:
+            fmt = '[WARNING] {asctime} | {levelname} | {message} | {pathname}'
+        elif record.levelno >= logging.INFO:
+            fmt = '[INFO] {asctime} | {levelname} | {message}'
         else:
-            self._style._fmt = '{asctime} {levelname} {message}'
+            fmt = '[DEBUG] {asctime} | {levelname} | {message}'
 
-        # Если Error или выше — добавляем стек ошибки
-        if record.levelno >= logging.ERROR and record.exc_info:
-            self._style._fmt += ' {exc_info}'
+        if record.exc_info:
+            record.exc_text = self.formatException(record.exc_info)
+        else:
+            record.exc_text = ''
 
-        return super().format(record)
-
-class LevelBasedStreamHandler(logging.StreamHandler):
-    """Кастомный StreamHandler с умным форматированием."""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.setFormatter(LevelBasedFormatter(style='{'))
+        formatter = logging.Formatter(fmt=fmt, style='{')
+        self.setFormatter(formatter)
+        super().emit(record)
